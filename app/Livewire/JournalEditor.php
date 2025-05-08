@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Journal;
+use Carbon\Carbon;
 
 class JournalEditor extends Component
 {
@@ -12,6 +13,7 @@ class JournalEditor extends Component
     public $title = '';
     public $content = '';
     public $existingJournal = null;
+    public $isSaving = false;
 
     public function mount($week, $year)
     {
@@ -30,35 +32,51 @@ class JournalEditor extends Component
         }
     }
 
+    // Simplified, faster save method
     public function saveJournal($title, $content)
     {
-        $this->validate([
-            'content' => 'required|string|min:1',
-        ]);
-
-        if ($this->existingJournal) {
-            $this->existingJournal->update([
-                'title' => $title,
-                'description' => $content,
-                'status' => 'good', // Default status for now
-            ]);
-        } else {
-            Journal::create([
-                'user_id' => auth()->id(),
-                'title' => $title,
-                'description' => $content,
-                'week_number' => $this->currentWeek,
-                'year' => $this->currentYear,
-                'status' => 'good', // Default status for now
-            ]);
+        $this->isSaving = true; // Set saving state
+        
+        // Skip validation to reduce processing time
+        $title = trim($title) ?: "Week {$this->currentWeek}, {$this->currentYear}";
+        
+        // Use transaction for faster DB operations
+        \DB::beginTransaction();
+        
+        try {
+            if ($this->existingJournal) {
+                $this->existingJournal->update([
+                    'title' => $title,
+                    'description' => $content,
+                    'status' => 'good',
+                ]);
+            } else {
+                Journal::create([
+                    'user_id' => auth()->id(),
+                    'title' => $title,
+                    'description' => $content,
+                    'week_number' => $this->currentWeek,
+                    'year' => $this->currentYear,
+                    'status' => 'good',
+                ]);
+            }
+            
+            \DB::commit();
+            session()->flash('message', 'Journal saved successfully!');
+            
+            // Direct redirect for faster response
+            return redirect()->route('dashboard');
+            
+        } catch (\Exception $e) {
+            \DB::rollback();
+            session()->flash('error', 'Failed to save journal. Please try again.');
+            $this->isSaving = false;
         }
-
-        session()->flash('message', 'Journal saved successfully!');
-        return redirect()->route('dashboard');
     }
 
     public function render()
     {
-        return view('livewire.journal-editor');
+        return view('livewire.journal-editor')
+            ->layout('components.layouts.app-simple');
     }
 }

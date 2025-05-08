@@ -62,11 +62,22 @@
         />
 
         <div class="flex items-center justify-end">
-            <flux:button type="submit" variant="primary" class="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg">
-                {{ __('Sign up and start journaling') }}
+            <flux:button 
+            type="submit" 
+            variant="primary" 
+            wire:loading.attr="disabled" 
+            wire:target="register"
+            class="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg">
+            <span wire:loading.remove wire:target="register">{{ __('Sign up and start journaling') }}</span>
+            <span wire:loading wire:target="register">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Creating account...
+            </span>
             </flux:button>
         </div>
-    </form>
 
     <!-- Social Login Divider -->
     <div class="relative my-6">
@@ -81,6 +92,7 @@
     <!-- Social Login Buttons -->
     <div class="space-y-3">
         <a href="{{ route('social.redirect', 'google') }}" class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors">
+            wire:navigate.hover
             <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>

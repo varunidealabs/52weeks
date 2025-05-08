@@ -10,14 +10,9 @@ class LifeCalendar extends Component
 {
     public $weeks = [];
     public $selectedJournal = null;
-    public $showJournalEditor = false;
     public $currentWeek;
     public $currentYear;
-    public $journalContent = '';
-    public $journalTitle = '';
-    public $editWeek;
-    public $editYear;
-
+    
     public function mount()
     {
         $user = auth()->user();
@@ -77,29 +72,47 @@ class LifeCalendar extends Component
 
     public function openWeek($weekNumber, $year)
     {
+        // Current date check
+        $now = Carbon::now();
+        $currentWeek = $now->weekOfYear;
+        $currentYear = $now->year;
+        
+        // Is this a future week?
+        if ($year > $currentYear || ($year == $currentYear && $weekNumber > $currentWeek)) {
+            // Show message for future weeks
+            session()->flash('futureMessage', "You can't journal for future weeks yet!");
+            return;
+        }
+        
+        // Is this current week?
+        if ($weekNumber === $currentWeek && $year === $currentYear) {
+            // Use direct navigation instead of event dispatching
+            return redirect()->route('journal.editor', ['week' => $weekNumber, 'year' => $year]);
+        }
+        
+        // Must be a past week - check if journal exists
         $journal = Journal::where('user_id', auth()->id())
             ->where('week_number', $weekNumber)
             ->where('year', $year)
             ->first();
-
-        // Check if it's current week
-        if ($weekNumber === $this->currentWeek && $year === $this->currentYear) {
-            $this->redirectToEditor($weekNumber, $year);
-        } else {
+        
+        if ($journal) {
             $this->selectedJournal = $journal;
-            $this->showJournalEditor = false;
+        } else {
+            // No journal entry found for this past week
+            session()->flash('pastMessage', "No journal entry found for Week $weekNumber, $year");
         }
-    }
-
-    public function redirectToEditor($week, $year)
-    {
-        return redirect()->route('journal.editor', ['week' => $week, 'year' => $year]);
     }
 
     public function closeJournal()
     {
         $this->selectedJournal = null;
-        $this->showJournalEditor = false;
+    }
+    
+    public function dismissMessage()
+    {
+        // Clear session messages to fix the error
+        session()->forget(['futureMessage', 'pastMessage']);
     }
 
     public function render()

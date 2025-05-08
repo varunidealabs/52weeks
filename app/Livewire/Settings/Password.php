@@ -7,13 +7,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('components.layouts.app-simple')]
 class Password extends Component
 {
     public string $current_password = '';
-
     public string $password = '';
-
     public string $password_confirmation = '';
 
     /**

@@ -4,13 +4,13 @@
         <!-- Top Bar -->
         <div class="w-full px-6 py-4 flex justify-end gap-4 border-b border-gray-200 dark:border-gray-700">
             <a href="{{ route('settings.profile') }}" 
-               class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors cursor-pointer">
+               class="px-4 py-2 rounded-lg bg-pink-500 hover:bg-pink-600 text-white transition-colors cursor-pointer">
                 Settings
             </a>
             <form method="POST" action="{{ route('logout') }}" class="inline">
                 @csrf
                 <button type="submit" 
-                        class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors cursor-pointer">
+                        class="px-4 py-2 rounded-lg bg-pink-500 hover:bg-pink-600 text-white transition-colors cursor-pointer">
                     Logout
                 </button>
             </form>

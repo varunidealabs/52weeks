@@ -26,6 +26,7 @@ class Login extends Component
     /**
      * Handle an incoming authentication request.
      */
+    // In app/Livewire/Auth/Login.php - Modify the login method
     public function login(): void
     {
         $this->validate();
@@ -43,7 +44,8 @@ class Login extends Component
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        // Using redirect (instead of redirectIntended) for direct path
+        $this->redirect(route('dashboard', absolute: false), navigate: true);
     }
 
     /**
